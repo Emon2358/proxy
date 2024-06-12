@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proxy Browser</title>
+</head>
+<body>
+<h1>Proxy Browser</h1>
+
+<!-- URL入力フォーム -->
+<form id="proxyForm">
+    <input type="url" id="urlInput" placeholder="URLを入力してください">
+    <button type="submit">アクセスする</button>
+</form>
+
+<!-- ウェブページ表示エリア -->
+<iframe id="webPageFrame" width="100%" height="600"></iframe>
+
+<!-- JavaScript -->
+<script>
+// フォームのサブミット時の処理
+document.getElementById("proxyForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const url = document.getElementById("urlInput").value;
+    if (url) {
+        loadWebPage(url);
+    }
+});
+
+// ウェブページを読み込む関数
+function loadWebPage(url) {
+    // CORSを回避するためのプロキシサーバーのURL
+    const proxyUrl = "https://api.allorigins.win/raw?url=";
+    // プロキシ経由でウェブページを読み込む
+    const apiUrl = proxyUrl + encodeURIComponent(url);
+    fetch(apiUrl)
+        .then(response => response.text())
+        .then(data => {
+            // 取得したHTMLをiframeに表示
+            document.getElementById("webPageFrame").srcdoc = data;
+        })
+        .catch(error => console.error("Error fetching web page:", error));
+}
+</script>
+
+</body>
+</html>

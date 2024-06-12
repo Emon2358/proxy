@@ -37,10 +37,26 @@ function loadWebPage(url) {
     fetch(apiUrl)
         .then(response => response.text())
         .then(data => {
-            // 取得したHTMLをiframeに表示
-            document.getElementById("webPageFrame").srcdoc = data;
+            // 取得したHTMLを解析してリダイレクト先のURLを取得
+            const redirectedUrl = parseRedirect(data);
+            if (redirectedUrl) {
+                // リダイレクト先がある場合は再度読み込む
+                loadWebPage(redirectedUrl);
+            } else {
+                // 取得したHTMLをiframeに表示
+                document.getElementById("webPageFrame").srcdoc = data;
+            }
         })
         .catch(error => console.error("Error fetching web page:", error));
+}
+
+// リダイレクト先を解析する関数
+function parseRedirect(html) {
+    const match = html.match(/<meta\s+http-equiv=["']refresh["']\s+content=["']\d+;\s*url=([^"']+)["']/i);
+    if (match && match[1]) {
+        return match[1];
+    }
+    return null;
 }
 </script>
 
